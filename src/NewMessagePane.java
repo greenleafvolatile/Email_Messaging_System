@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Logger;
 
 public class NewMessagePane {
 
@@ -11,7 +12,7 @@ public class NewMessagePane {
     private JTextField toField, subjectField;
 
     public NewMessagePane(User thisUser, JFrame frame){
-        User user=thisUser;
+        this.user=thisUser;
 
         JOptionPane.showOptionDialog(frame, createMainPanel(), "New Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,  createButtonsArray(), createButtonsArray()[0]);
     }
@@ -65,11 +66,14 @@ public class NewMessagePane {
         sendButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
+                JOptionPane.getRootFrame().setVisible(false);
                 User recipient=UserController.getUser(toField.getText());
                 // Do something if user does not exist.
                 Message message=new Message(UserController.getUsername(user), toField.getText(), subjectField.getText(), messageArea.getText());
                 UserController.addMessage(recipient, message);
-
+                UserController.removeUserFromFile(recipient);
+                UserController.writeUserToFile(recipient);
+                Logger.getGlobal().info("Sent!");
             }
         });
 
