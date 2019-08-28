@@ -1,15 +1,19 @@
 import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class InboxFrame extends JFrame{
 
     private List<Message> messages;
-    User user;
+    User thisUser;
     JPanel mainPanel;
 
     public InboxFrame(User aUser) {
-        user = aUser;
+        thisUser = aUser;
         messages = aUser.getMessage();
         setContentPane(createMainPanel());
         pack();
@@ -26,13 +30,14 @@ public class InboxFrame extends JFrame{
     }
 
     public JLabel createOwnerLabel(){
-        JLabel ownerLabel=new JLabel("Mailbox of: " + user.getUsername(), SwingConstants.CENTER);
+        JLabel ownerLabel=new JLabel("Mailbox of: " + thisUser.getUsername(), SwingConstants.CENTER);
         return ownerLabel;
     }
 
 
     private JTextArea createMessageTextArea(){
         JTextArea messageTextArea=new JTextArea(20, 20);
+        messageTextArea.setBorder(new BorderUIResource.EtchedBorderUIResource());
         messageTextArea.setLineWrap(true);
         messageTextArea.setWrapStyleWord(true);
         messageTextArea.append(messages.get(0).format());
@@ -50,18 +55,27 @@ public class InboxFrame extends JFrame{
     private JPanel createControlPanel(){
         JPanel controlPanel=new JPanel();
 
-        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-        controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        controlPanel.add(createControlPanelButton("New Message"));
 
+        controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+        //controlPanel.setBorder(new EtchedBorder());
+        controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        JButton newMessageButton=new JButton("New Message");
+        newMessageButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent event){
+                new NewMessagePane(thisUser,InboxFrame.this);
+            }
+        });
+        controlPanel.add(newMessageButton);
         controlPanel.add(Box.createRigidArea(new Dimension(0, 25)));
-        controlPanel.add(createControlPanelButton("Log out"));
+        controlPanel.add(createControlPanelButtons("Log out"));
         return controlPanel;
 
     }
 
 
-    private JButton createControlPanelButton(String text){
+    private JButton createControlPanelButtons(String text){
         JButton button=new JButton(text);
         button.setMaximumSize(new Dimension(125, 25));
         return button;
