@@ -33,6 +33,8 @@ public class InboxFrame extends JFrame{
 
     private JTextArea createMessageTextArea(){
         JTextArea messageTextArea=new JTextArea(20, 20);
+        messageTextArea.setLineWrap(true);
+        messageTextArea.setWrapStyleWord(true);
         messageTextArea.append(messages.get(0).format());
         return messageTextArea;
     }
