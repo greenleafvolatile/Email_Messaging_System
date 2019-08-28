@@ -15,7 +15,7 @@ public class RegistrationPane {
 
     public RegistrationPane() {
 
-        showPane(createMainPanel(), createButtons());
+        JOptionPane.showOptionDialog(null, createMainPanel(), "Registration", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, createButtons(), createButtons()[0]);
     }
 
     private JPanel createMainPanel(){
@@ -103,9 +103,9 @@ public class RegistrationPane {
                 char[] aPassword=passwordField.getPassword();
                 Logger.getGlobal().info("Password: " + new String(aPassword));
 
-                if(UserUtils.getUser(userNameField.getText())==null){
+                if(UserController.getUser(userNameField.getText())==null){
                     User newUser =new User(firstName, lastName, aUsername, aPassword);
-                    UserUtils.writeUserToFile(newUser);
+                    UserController.writeUserToFile(newUser);
                     JOptionPane.getRootFrame().dispose();
                     LoginPane login = new LoginPane();
                 }
@@ -123,8 +123,4 @@ public class RegistrationPane {
     }
 
 
-    public void showPane(JPanel mainPanel, JButton[] buttons){
-
-        JOptionPane.showOptionDialog(null, mainPanel, "Registration", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, buttons, buttons[0]);
-    }
 }
