@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 public class User implements Serializable {
 
@@ -22,7 +23,9 @@ public class User implements Serializable {
     }
 
     public void addMessage(Message message){
+
         messages.add(message);
+        Logger.getGlobal().info("Message added!");
     }
 
     public ArrayList<Message> getMessage(){
@@ -32,6 +35,4 @@ public class User implements Serializable {
     public String toString(){
         return new StringBuffer("Username: ").append(username).append(" Password: ").append(password).toString();
     }
-
-
 }
