@@ -2,11 +2,11 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class UserUtils  {
+public class UserController {
 
     public static final String path="/home/daan/Downloads/users.dat";
 
-    public UserUtils(){
+    public UserController(){
     }
 
     public static void writeUserToFile(User aUser) {
@@ -80,4 +80,13 @@ public class UserUtils  {
         }
         return user;
     }
+
+    public static String getUsername(User aUser){
+        return aUser.getUsername();
+    }
+
+    public static void addMessage(User aUser, Message aMessage){
+        aUser.addMessage(aMessage);
+    }
+
 }
