@@ -1,11 +1,19 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class NewMessagePane {
 
-    public NewMessagePane(){
-       showPane();
+
+    private User user;
+    private JTextArea messageArea;
+    private JTextField toField, subjectField;
+
+    public NewMessagePane(User thisUser, JFrame frame){
+        User user=thisUser;
+
+        JOptionPane.showOptionDialog(frame, createMainPanel(), "New Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,  createButtonsArray(), createButtonsArray()[0]);
     }
 
     private JPanel createMainPanel(){
@@ -34,19 +42,19 @@ public class NewMessagePane {
 
     private JPanel createTextFieldsPanel(){
         JPanel textFieldsPanel=new JPanel(new GridLayout(0, 1, 10, 10));
-        JTextField toField=new JTextField();
-        JTextField subjectField=new JTextField();
+        toField=new JTextField();
+        subjectField=new JTextField();
         textFieldsPanel.add(toField);
         textFieldsPanel.add(subjectField);
         return textFieldsPanel;
     }
 
-    public JScrollPane createMessageArea(){
-        JTextArea messageArea=new JTextArea(15, 25);
+    private JScrollPane createMessageArea(){
+        messageArea=new JTextArea(15, 25);
         messageArea.setLineWrap(true);
         messageArea.setWrapStyleWord(true);
 
-        JScrollPane scrollPane=new JScrollPane(messageArea, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane=new JScrollPane(messageArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         return scrollPane;
     }
@@ -54,22 +62,20 @@ public class NewMessagePane {
     private JButton[] createButtonsArray(){
 
         JButton sendButton=new JButton("Send");
+        sendButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent event){
+                User recipient=UserController.getUser(toField.getText());
+                // Do something if user does not exist.
+                Message message=new Message(UserController.getUsername(user), toField.getText(), subjectField.getText(), messageArea.getText());
+                UserController.addMessage(recipient, message);
+
+            }
+        });
+
         JButton cancelButton=new JButton("Cancel");
         return new JButton[]{sendButton, cancelButton};
 
-    }
-
-    private void showPane(){
-        JOptionPane.showOptionDialog(null, createMainPanel(), "New Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,  createButtonsArray(), createButtonsArray()[0]);
-    }
-
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(new Runnable(){
-
-            public void run(){
-                new NewMessagePane().showPane();
-            }
-        });
     }
 
 
