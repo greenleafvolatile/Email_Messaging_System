@@ -28,7 +28,8 @@ public class LoginPane {
             User user = UserController.getUser(usernameField.getText());
             char[] password=passwordField.getPassword();
             if(Arrays.equals(password, user.getPassword())){
-                JOptionPane.getRootFrame().setVisible(false);
+
+                JOptionPane.getRootFrame().dispose();
                 InboxFrame inbox=new InboxFrame(user);
                 inbox.setLocationRelativeTo(null);
                 inbox.setVisible(true);
