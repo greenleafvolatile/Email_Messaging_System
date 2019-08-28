@@ -17,8 +17,7 @@ public class LoginPane {
     private JPasswordField passwordField;
 
     public LoginPane(){
-
-        showPane();
+        JOptionPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtonsArray(), createButtonsArray()[0]);
     }
 
     class LoginListener implements ActionListener{
@@ -26,7 +25,7 @@ public class LoginPane {
         @Override
         public void actionPerformed(ActionEvent even){
 
-            User user =UserUtils.getUser(usernameField.getText());
+            User user = UserController.getUser(usernameField.getText());
             char[] password=passwordField.getPassword();
             if(Arrays.equals(password, user.getPassword())){
                 JOptionPane.getRootFrame().setVisible(false);
@@ -121,7 +120,7 @@ public class LoginPane {
         return textFieldsPanel;
     }
 
-    private JButton[] createButtons() {
+    private JButton[] createButtonsArray() {
 
         JButton loginButton = new JButton("Login");
 
@@ -146,7 +145,6 @@ public class LoginPane {
 
     private void showPane() {
 
-        JOptionPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtons(), createButtons()[0]);
     }
 
 }
