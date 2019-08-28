@@ -7,7 +7,7 @@ public class User implements Serializable {
     private char[] password;
     private ArrayList<Message> messages;
 
-    public User(String firstname, String lastName, String aUsername, char[] aPassword){
+    public User(String firstName, String lastName, String aUsername, char[] aPassword){
         messages=new ArrayList<>();
         username=aUsername;
         password=aPassword;
