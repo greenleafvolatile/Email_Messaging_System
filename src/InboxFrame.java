@@ -40,13 +40,14 @@ public class InboxFrame extends JFrame{
         messageTextArea.setBorder(new BorderUIResource.EtchedBorderUIResource());
         messageTextArea.setLineWrap(true);
         messageTextArea.setWrapStyleWord(true);
-        messageTextArea.append(messages.get(0).format());
+        if(messages.size()>0){
+            messageTextArea.append(messages.get(0).format());
+        }
         return messageTextArea;
     }
 
     private JScrollPane createInboxArea(){
         JList messageList=new JList(messages.toArray());
-        //JList messageList=new JList(messages.toArray());
         JScrollPane inboxArea=new JScrollPane(messageList);
         inboxArea.setPreferredSize(new Dimension(200, 200));
         return inboxArea;
@@ -57,7 +58,6 @@ public class InboxFrame extends JFrame{
 
 
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-        //controlPanel.setBorder(new EtchedBorder());
         controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         JButton newMessageButton=new JButton("New Message");
@@ -71,7 +71,6 @@ public class InboxFrame extends JFrame{
         controlPanel.add(Box.createRigidArea(new Dimension(0, 25)));
         controlPanel.add(createControlPanelButtons("Log out"));
         return controlPanel;
-
     }
 
 
@@ -81,19 +80,4 @@ public class InboxFrame extends JFrame{
         return button;
 
     }
-
-    /*public static void createAndShowGUI(){
-        JFrame frame=new InboxFrame();
-        frame.setVisible(true);
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
-
-    public static void main(String[] args){
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
-                InboxFrame.createAndShowGUI();
-            }
-        });
-    }*/
 }
