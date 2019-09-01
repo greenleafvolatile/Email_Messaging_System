@@ -7,14 +7,15 @@ import java.util.logging.Logger;
 public class NewMessagePane {
 
 
-    private User user;
+    private final User user;
     private JTextArea messageArea;
     private JTextField toField, subjectField;
 
-    public NewMessagePane(User thisUser, JFrame frame){
+    public NewMessagePane(User thisUser){
         this.user=thisUser;
 
-        JOptionPane.showOptionDialog(frame, createMainPanel(), "New Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,  createButtonsArray(), createButtonsArray()[0]);
+
+        JOptionPane.showOptionDialog(null, createMainPanel(), "New Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,  createButtonsArray(), createButtonsArray()[0]);
     }
 
     private JPanel createMainPanel(){
@@ -66,14 +67,27 @@ public class NewMessagePane {
         sendButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
-                JOptionPane.getRootFrame().setVisible(false);
-                User recipient=UserController.getUser(toField.getText());
-                // Do something if user does not exist.
-                Message message=new Message(UserController.getUsername(user), toField.getText(), subjectField.getText(), messageArea.getText());
-                UserController.addMessage(recipient, message);
-                UserController.removeUserFromFile(recipient);
-                UserController.writeUserToFile(recipient);
-                Logger.getGlobal().info("Sent!");
+                if(UserController.getUser(toField.getText())!=null){
+                    User recipient=UserController.getUser(toField.getText());
+
+                    // Do something if user does not exist.
+                    Message message=new Message(UserController.getUsername(user), toField.getText(), subjectField.getText(), messageArea.getText());
+                    UserController.addMessage(recipient, message);
+                    UserController.removeUserFromFile(recipient);
+                    UserController.writeUserToFile(recipient); // writes updated User object to file.
+                    JOptionPane.getRootFrame().setVisible(false);
+                    //JOptionPane.getRootFrame().dispose();
+                    Logger.getGlobal().info("Sent!");
+
+                }
+                else{
+                    Logger.getGlobal().info("User does not exist");
+                    Message message = new Message(UserController.getUsername(user), UserController.getUsername(user), subjectField.getText(), "A message that you sent to could not be delivered to one or more of its recipients: \n" + toField.getText() + "\n" + messageArea.getText());
+                    Logger.getGlobal().info("Undeliverable message sent");
+                    UserController.addMessage(user, message);
+                    UserController.removeUserFromFile(user);
+                    UserController.writeUserToFile(user);
+                }
             }
         });
 
