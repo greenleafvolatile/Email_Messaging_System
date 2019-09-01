@@ -4,6 +4,8 @@ import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class InboxFrame extends JFrame{
@@ -11,6 +13,7 @@ public class InboxFrame extends JFrame{
     private List<Message> messages;
     User thisUser;
     JPanel mainPanel;
+    JTextArea messageTextArea;
 
     public InboxFrame(User aUser) {
         thisUser = aUser;
@@ -36,7 +39,7 @@ public class InboxFrame extends JFrame{
 
 
     private JTextArea createMessageTextArea(){
-        JTextArea messageTextArea=new JTextArea(20, 20);
+        messageTextArea=new JTextArea(20, 20);
         messageTextArea.setBorder(new BorderUIResource.EtchedBorderUIResource());
         messageTextArea.setLineWrap(true);
         messageTextArea.setWrapStyleWord(true);
@@ -48,36 +51,65 @@ public class InboxFrame extends JFrame{
 
     private JScrollPane createInboxArea(){
         JList messageList=new JList(messages.toArray());
+        messageList.addMouseListener(new MouseAdapter(){
+            public void mouseClicked(MouseEvent e){
+                JList list=(JList) e.getSource();
+               if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2){
+                    int index=list.locationToIndex(e.getPoint());
+                    if(index>=0){
+                        Message message=(Message)list.getModel().getElementAt(index);
+                        messageTextArea.setText(message.format());
+                    }
+                }
+            }
+        });
         JScrollPane inboxArea=new JScrollPane(messageList);
         inboxArea.setPreferredSize(new Dimension(200, 200));
         return inboxArea;
     }
 
     private JPanel createControlPanel(){
+
+        class CustomButton extends JButton{
+
+            private Dimension size=new Dimension(125, 25);
+
+            public CustomButton(String text){
+                super(text);
+                setPreferredSize(size);
+                setMinimumSize(size);
+                setMaximumSize(size);
+            }
+        }
+
         JPanel controlPanel=new JPanel();
 
 
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JButton newMessageButton=new JButton("New Message");
+        JButton newMessageButton=new CustomButton("New Message");
         newMessageButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
-                new NewMessagePane(thisUser,InboxFrame.this);
+                new NewMessagePane(thisUser);
             }
         });
         controlPanel.add(newMessageButton);
         controlPanel.add(Box.createRigidArea(new Dimension(0, 25)));
-        controlPanel.add(createControlPanelButtons("Log out"));
+
+        JButton logoutButton=new CustomButton("Logout");
+        logoutButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent event){
+                InboxFrame.this.dispose();
+                LoginPane newLoginPane=new LoginPane();
+            }
+        });
+        controlPanel.add(logoutButton);
+
         return controlPanel;
     }
 
 
-    private JButton createControlPanelButtons(String text){
-        JButton button=new JButton(text);
-        button.setMaximumSize(new Dimension(125, 25));
-        return button;
-
-    }
 }
