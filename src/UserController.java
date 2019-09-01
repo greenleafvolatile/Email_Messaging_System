@@ -49,7 +49,7 @@ public class UserController {
                 try{
                     Object obj = objIn.readObject();
                     users.add((User)obj);
-                    Logger.getGlobal().info("A User object was added to the list!");
+                    Logger.getGlobal().info("User" + ((User) obj).getUsername() + "was added to the list!");
                 }
                 catch(EOFException eof){
                     Logger.getGlobal().info("An EOF exception occurred!");
@@ -96,6 +96,11 @@ public class UserController {
             }
         }
         return user;
+    }
+
+    public static int getNumberOfRegisteredUsers(){
+        ArrayList<User> users=readUsersFromFile();
+        return users.size();
     }
 
     public static String getUsername(User aUser){
