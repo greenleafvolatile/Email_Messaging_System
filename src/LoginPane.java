@@ -15,9 +15,11 @@ public class LoginPane {
     private JTextField usernameField;
     private JLabel errorLabel;
     private JPasswordField passwordField;
+    private JOptionPane loginPane;
 
     public LoginPane(){
-        JOptionPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtonsArray(), createButtonsArray()[0]);
+        loginPane=new JOptionPane();
+        loginPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtonsArray(), createButtonsArray()[0]);
     }
 
     class LoginListener implements ActionListener{
@@ -27,15 +29,20 @@ public class LoginPane {
 
             User user = UserController.getUser(usernameField.getText());
             char[] password=passwordField.getPassword();
-            if(Arrays.equals(password, user.getPassword())){
+            if(user!=null){
+                if(Arrays.equals(password, user.getPassword())){
 
-                JOptionPane.getRootFrame().dispose();
-                InboxFrame inbox=new InboxFrame(user);
-                inbox.setLocationRelativeTo(null);
-                inbox.setVisible(true);
+                    JOptionPane.getRootFrame().dispose();
+                    InboxFrame inbox=new InboxFrame(user);
+                    inbox.setLocationRelativeTo(null);
+                    inbox.setVisible(true);
+                }
+                else{
+                    errorLabel.setText("Incorrect password!");
+                }
             }
             else{
-                errorLabel.setText("Incorrect password!");
+                errorLabel.setText("Unknown username!");
             }
         }
     }
@@ -64,21 +71,20 @@ public class LoginPane {
 
     private JPanel createTextFieldsPanel(){
 
+        class removeErrorTextListener extends FocusAdapter{
+
+            public void focusGained(FocusEvent event){
+                errorLabel.setText("");
+            }
+        }
+
         JPanel textFieldsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
 
         usernameField = new JTextField();
+        usernameField.addFocusListener(new removeErrorTextListener());
         passwordField = new JPasswordField();
         passwordField.addActionListener(new LoginListener());
-
-        // Add a focusListener to clear the errorLabel's text when a user re-selects the passwordField to correct the password.
-        passwordField.addFocusListener(new FocusAdapter() {
-
-            @Override
-            public void focusGained(FocusEvent Event){
-                Logger.getGlobal().info("Focus gained!");
-                errorLabel.setText("");
-            }
-        });
+        passwordField.addFocusListener(new removeErrorTextListener());
 
         // Add a DocumentFilter to limit the number of characters in the passwordField
 
@@ -88,10 +94,7 @@ public class LoginPane {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 String string=fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-                if(string.length()<=8){
-                    super.replace(fb, offset, length, text, attrs);
-                }
-            }
+                if(string.length()<=8){ super.replace(fb, offset, length, text, attrs); } }
         });
 
         // Add a documentListener to clear clear the errorLabel's text when a user corrects the password without the passwordField having lost focus.
@@ -124,28 +127,20 @@ public class LoginPane {
     private JButton[] createButtonsArray() {
 
         JButton loginButton = new JButton("Login");
-
         loginButton.addActionListener(new LoginListener());
 
         JButton registerButton = new JButton("Register");
-
         registerButton.addActionListener(event -> {
             JOptionPane.getRootFrame().dispose();
-            RegistrationPane regDialog = new RegistrationPane();
+            new RegistrationPane();
         });
 
         JButton cancelButton = new JButton("Cancel");
-
         cancelButton.addActionListener(event -> {
 
                 System.exit(0);
         });
+
         return new JButton[]{loginButton, registerButton, cancelButton};
     }
-
-
-    private void showPane() {
-
-    }
-
 }
