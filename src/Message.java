@@ -21,6 +21,14 @@ public class Message implements Serializable {
         return new StringBuffer("Sender: ").append(sender).append(" title: ").append(subject).toString();
     }
 
+    public String getSender(){
+        return sender;
+    }
+
+    public String getSubject(){
+        return subject;
+    }
+
     public String format(){
         return new StringBuffer("Sender: ").append(sender+"\n").append("Title: ").append(subject+"\n").append(text).toString();
     }
