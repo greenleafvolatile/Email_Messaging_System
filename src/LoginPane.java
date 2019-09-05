@@ -86,7 +86,8 @@ public class LoginPane {
         passwordField.addActionListener(new LoginListener());
         passwordField.addFocusListener(new removeErrorTextListener());
 
-        // Add a DocumentFilter to limit the number of characters in the passwordField
+        // Password must consist of between 4 and 6 characters containing at least one uppercase and one lowercase character.
+        // I added a DocumentFilter to limit the number of characters in the passwordField to 6.
 
         AbstractDocument document=(AbstractDocument) passwordField.getDocument();
         document.setDocumentFilter(new DocumentFilter(){
@@ -94,7 +95,17 @@ public class LoginPane {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 String string=fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-                if(string.length()<=8){ super.replace(fb, offset, length, text, attrs); } }
+                Logger.getGlobal().info("passw: " + new String(passwordField.getPassword()));
+                Logger.getGlobal().info("String length: " + string.length());
+                Logger.getGlobal().info("Fb text: " + fb.getDocument().getText(0, fb.getDocument().getLength()));
+                Logger.getGlobal().info("Fb length: " + fb.getDocument().getLength());
+                Logger.getGlobal().info("Length: " + length);
+                // Text is what is inputted by the user in the Document behind the password field.
+                Logger.getGlobal().info("Text: " + text);
+                Logger.getGlobal().info("Offset: " + offset);
+                if(string.length()<=6){ super.replace(fb, offset, length, text, attrs);
+                }
+            }
         });
 
         // Add a documentListener to clear clear the errorLabel's text when a user corrects the password without the passwordField having lost focus.
