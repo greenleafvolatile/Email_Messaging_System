@@ -47,10 +47,13 @@ public class RegistrationPane {
                 if (!Arrays.equals(passwordField.getPassword(), retypePasswordField.getPassword())) {
                     errorLabel.setText("Passwords don't match");
                 }
+                else{
+                   isVerifiedPassword=true;
+                   Logger.getGlobal().info("Password has been verified");
+                }
             }
             else {
                 errorLabel.setText("");
-                isVerifiedPassword = true;
             }
         }
     }
@@ -65,7 +68,6 @@ public class RegistrationPane {
         mainPanel.add(createTextFieldsPanel(), BorderLayout.CENTER);
 
         errorLabel=new ErrorLabel();
-
 
         mainPanel.add(errorLabel, BorderLayout.SOUTH);
         return mainPanel;
@@ -100,17 +102,17 @@ public class RegistrationPane {
 
         passwordField=new JPasswordField(12);
         passwordField.getDocument().addDocumentListener(new PasswordFieldListener());
-        /*passwordField.addFocusListener(new FocusAdapter(){
+        passwordField.addFocusListener(new FocusAdapter(){
 
             public void focusLost(FocusEvent e){
-                if(passwordField.getPassword()!=null & !new PassWordVerifier().isCorrectPassword(passwordField.getPassword())){
+                if(passwordField.getPassword()!=null & ! PassWordVerifier.isCorrectPassword(passwordField.getPassword())){
                     errorLabel.setText("Invalid password");
                 }
                 else {
                     isValidPassword=true;
                 }
             }
-        });*/
+        });
 
 
         retypePasswordField=new JPasswordField(12);
@@ -159,7 +161,7 @@ public class RegistrationPane {
                         User newUser = new User(firstName, lastName, aUsername, aPassword);
                         newUser.addMessage(new Message("Admin", aUsername, "Welcome!", "Welcome to the email_messaging_system!"));
                         UserController.writeUserToFile(newUser);
-                        Logger.getGlobal().info("Nr of users: " + UserController.getNumberOfRegisteredUsers());
+                        //Logger.getGlobal().info("Nr of users: " + UserController.getNumberOfRegisteredUsers());
                         JOptionPane.getRootFrame().dispose();
                         new LoginPane();
                     }
@@ -169,6 +171,13 @@ public class RegistrationPane {
         });
 
         JButton cancelButton=new JButton("Cancel");
+        cancelButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent event){
+                JOptionPane.getRootFrame().dispose();
+                new LoginPane();
+            }
+        });
         JButton[] buttons={createAccountButton, cancelButton};
         return buttons;
     }
