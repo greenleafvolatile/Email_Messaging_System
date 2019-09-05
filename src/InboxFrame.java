@@ -1,25 +1,51 @@
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.BorderUIResource;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class InboxFrame extends JFrame{
 
     private List<Message> messages;
-    User thisUser;
-    JPanel mainPanel;
-    JTextArea messageTextArea;
+    private User thisUser;
+    private JPanel mainPanel;
+    private JTextArea messageTextArea;
+    private JList<Message> messageList;
+    private int messageListIndex;
+    private DefaultListModel<Message> listModel;
 
     public InboxFrame(User aUser) {
         thisUser = aUser;
-        messages = aUser.getMessage();
+        messages = UserController.getMessages(aUser);
+        Logger.getGlobal().info("Messages length: " + messages.size());
         setContentPane(createMainPanel());
         pack();
+        int delay=1000;
+        ActionListener messageListener=new ActionListener(){
+
+            public void actionPerformed(ActionEvent event){
+                User user=UserController.getUser(thisUser.getUsername());
+                ArrayList<Message> updated=user.getMessages();
+                if(messages.size()<user.getMessages().size()){
+                    messages=user.getMessages();
+                    listModel = new DefaultListModel<>();
+                    for(Message message : updated){
+                        listModel.addElement(message);
+                    }
+                    messageList.setModel(listModel);
+                }
+            }
+        };
+        Timer inboxRefresher=new Timer(delay, messageListener);
+        inboxRefresher.start();
     }
 
     private JPanel createMainPanel(){
@@ -38,32 +64,58 @@ public class InboxFrame extends JFrame{
     }
 
 
-    private JTextArea createMessageTextArea(){
+    private JScrollPane createMessageTextArea(){
         messageTextArea=new JTextArea(20, 20);
-        messageTextArea.setBorder(new BorderUIResource.EtchedBorderUIResource());
+        messageTextArea.setBorder(new EtchedBorder());
         messageTextArea.setLineWrap(true);
         messageTextArea.setWrapStyleWord(true);
         if(messages.size()>0){
             messageTextArea.append(messages.get(0).format());
         }
-        return messageTextArea;
+        JScrollPane scrollPane=new JScrollPane(messageTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        return scrollPane;
     }
 
     private JScrollPane createInboxArea(){
-        JList messageList=new JList(messages.toArray());
+        listModel=new DefaultListModel<>();
+        for(Message message : messages){
+            listModel.addElement(message);
+        }
+        messageList=new JList<>(listModel);
+        messageList.setCellRenderer(new ListCellRenderer<Message>() {
+            JLabel label=new JLabel();
+            @Override
+            public Component getListCellRendererComponent(JList<? extends Message> jList, Message message, int index, boolean isSelected, boolean cellHasFocus) {
+                label.setText("Sender: " + message.getSender() + " Subject: " + message.getSubject());
+                if(isSelected){
+                    label.setBackground(jList.getSelectionBackground());
+                    label.setForeground(jList.getSelectionForeground());
+                }
+                else{
+                    label.setBackground(jList.getBackground());
+                    label.setForeground(jList.getForeground());
+                }
+
+                label.setFont(jList.getFont());
+                label.setOpaque(true);
+                return label;
+            }
+        });
+
         messageList.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
-                JList list=(JList) e.getSource();
+                messageListIndex=messageList.getSelectedIndex();
                if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2){
-                    int index=list.locationToIndex(e.getPoint());
-                    if(index>=0){
-                        Message message=(Message)list.getModel().getElementAt(index);
+                    if(messageListIndex>=0){
+                        Message message=messageList.getModel().getElementAt(messageListIndex);
                         messageTextArea.setText(message.format());
                     }
                 }
             }
         });
-        JScrollPane inboxArea=new JScrollPane(messageList);
+        JScrollPane inboxArea=new JScrollPane(messageList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        inboxArea.setViewportBorder(new EtchedBorder());
         inboxArea.setPreferredSize(new Dimension(200, 200));
         return inboxArea;
     }
@@ -88,7 +140,8 @@ public class InboxFrame extends JFrame{
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JButton newMessageButton=new CustomButton("New Message");
+        JButton newMessageButton=new CustomButton("New");
+
         newMessageButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
@@ -96,6 +149,28 @@ public class InboxFrame extends JFrame{
             }
         });
         controlPanel.add(newMessageButton);
+        controlPanel.add(Box.createRigidArea(new Dimension(0, 25)));
+
+        JButton deleteMessageButton=new CustomButton("Delete");
+        deleteMessageButton.addActionListener(new ActionListener(){
+
+            public void actionPerformed(ActionEvent event){
+                if(messageList.getModel().getSize()>0){
+
+
+                    messages.remove(messageListIndex);
+                    UserController.removeUserFromFile(thisUser);
+                    UserController.writeUserToFile(thisUser);
+                    listModel.remove(messageListIndex);
+
+
+                    Logger.getGlobal().info("List size: " + messageList.getModel().getSize());
+                    Logger.getGlobal().info("Messages length: " + messages.size());
+                }
+
+            }
+        });
+        controlPanel.add(deleteMessageButton);
         controlPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
         JButton logoutButton=new CustomButton("Logout");
