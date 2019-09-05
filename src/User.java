@@ -28,7 +28,7 @@ public class User implements Serializable {
         Logger.getGlobal().info("Message added!");
     }
 
-    public ArrayList<Message> getMessage(){
+    public ArrayList<Message> getMessages(){
         return messages;
     }
 
