@@ -161,7 +161,6 @@ public class RegistrationPane {
                         User newUser = new User(firstName, lastName, aUsername, aPassword);
                         newUser.addMessage(new Message("Admin", aUsername, "Welcome!", "Welcome to the email_messaging_system!"));
                         UserController.writeUserToFile(newUser);
-                        //Logger.getGlobal().info("Nr of users: " + UserController.getNumberOfRegisteredUsers());
                         JOptionPane.getRootFrame().dispose();
                         new LoginPane();
                     }
