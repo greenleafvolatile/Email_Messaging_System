@@ -1,12 +1,9 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
@@ -15,11 +12,10 @@ public class LoginPane {
     private JTextField usernameField;
     private JLabel errorLabel;
     private JPasswordField passwordField;
-    private JOptionPane loginPane;
+    private User user;
 
     public LoginPane(){
-        loginPane=new JOptionPane();
-        loginPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtonsArray(), createButtonsArray()[0]);
+        JOptionPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtonsArray(), createButtonsArray()[0]);
     }
 
     class LoginListener implements ActionListener{
@@ -27,12 +23,13 @@ public class LoginPane {
         @Override
         public void actionPerformed(ActionEvent even){
 
-            User user = UserController.getUser(usernameField.getText());
+            user = UserController.getUser(usernameField.getText());
             char[] password=passwordField.getPassword();
             if(user!=null){
                 if(Arrays.equals(password, user.getPassword())){
 
                     JOptionPane.getRootFrame().dispose();
+
                     InboxFrame inbox=new InboxFrame(user);
                     inbox.setLocationRelativeTo(null);
                     inbox.setVisible(true);
@@ -42,6 +39,7 @@ public class LoginPane {
                 }
             }
             else{
+
                 errorLabel.setText("Unknown username!");
             }
         }
@@ -71,20 +69,21 @@ public class LoginPane {
 
     private JPanel createTextFieldsPanel(){
 
-        class removeErrorTextListener extends FocusAdapter{
-
-            public void focusGained(FocusEvent event){
-                errorLabel.setText("");
-            }
-        }
 
         JPanel textFieldsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
 
         usernameField = new JTextField();
-        usernameField.addFocusListener(new removeErrorTextListener());
+        usernameField.addFocusListener(new FocusAdapter(){
+
+            public void focusGained(FocusEvent e){
+                if(user==null){
+                    errorLabel.setText("");
+                }
+            }
+        });
         passwordField = new JPasswordField();
         passwordField.addActionListener(new LoginListener());
-        passwordField.addFocusListener(new removeErrorTextListener());
+        //passwordField.addFocusListener(new removeErrorTextListener());
 
         // Password must consist of between 4 and 6 characters containing at least one uppercase and one lowercase character.
         // I added a DocumentFilter to limit the number of characters in the passwordField to 6.
@@ -95,14 +94,6 @@ public class LoginPane {
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 String string=fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-                Logger.getGlobal().info("passw: " + new String(passwordField.getPassword()));
-                Logger.getGlobal().info("String length: " + string.length());
-                Logger.getGlobal().info("Fb text: " + fb.getDocument().getText(0, fb.getDocument().getLength()));
-                Logger.getGlobal().info("Fb length: " + fb.getDocument().getLength());
-                Logger.getGlobal().info("Length: " + length);
-                // Text is what is inputted by the user in the Document behind the password field.
-                Logger.getGlobal().info("Text: " + text);
-                Logger.getGlobal().info("Offset: " + offset);
                 if(string.length()<=6){ super.replace(fb, offset, length, text, attrs);
                 }
             }
@@ -142,6 +133,11 @@ public class LoginPane {
 
         JButton registerButton = new JButton("Register");
         registerButton.addActionListener(event -> {
+            /*if(UserController.isFirstWrite()){
+                JOptionPane.showInputDialog(null, "Please provide a path for the user data file: ", null, JOptionPane.INFORMATION_MESSAGE);
+
+
+            }*/
             JOptionPane.getRootFrame().dispose();
             new RegistrationPane();
         });
