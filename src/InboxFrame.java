@@ -33,11 +33,10 @@ public class InboxFrame extends JFrame{
 
             public void actionPerformed(ActionEvent event){
                 User user=UserController.getUser(thisUser.getUsername());
-                ArrayList<Message> updated=user.getMessages();
                 if(messages.size()<user.getMessages().size()){
                     messages=user.getMessages();
                     listModel = new DefaultListModel<>();
-                    for(Message message : updated){
+                    for(Message message : messages){
                         listModel.addElement(message);
                     }
                     messageList.setModel(listModel);
@@ -87,7 +86,8 @@ public class InboxFrame extends JFrame{
             JLabel label=new JLabel();
             @Override
             public Component getListCellRendererComponent(JList<? extends Message> jList, Message message, int index, boolean isSelected, boolean cellHasFocus) {
-                label.setText("Sender: " + message.getSender() + " Subject: " + message.getSubject());
+                label.setText("From: " + message.getSender() + " Subject: " + message.getSubject());
+
                 if(isSelected){
                     label.setBackground(jList.getSelectionBackground());
                     label.setForeground(jList.getSelectionForeground());
@@ -106,6 +106,7 @@ public class InboxFrame extends JFrame{
         messageList.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
                 messageListIndex=messageList.getSelectedIndex();
+                Logger.getGlobal().info("Message list index: " + messageListIndex);
                if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2){
                     if(messageListIndex>=0){
                         Message message=messageList.getModel().getElementAt(messageListIndex);
@@ -155,13 +156,14 @@ public class InboxFrame extends JFrame{
         deleteMessageButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
-                if(messageList.getModel().getSize()>0){
+                if(messageList.getModel().getSize()>0 && messageListIndex<listModel.size()){
+                    Logger.getGlobal().info("Check!");
 
 
                     messages.remove(messageListIndex);
+                    listModel.remove(messageListIndex);
                     UserController.removeUserFromFile(thisUser);
                     UserController.writeUserToFile(thisUser);
-                    listModel.remove(messageListIndex);
 
 
                     Logger.getGlobal().info("List size: " + messageList.getModel().getSize());
