@@ -5,17 +5,16 @@ import java.util.logging.Logger;
 
 public class UserController {
 
-    //private static final String path="/home/daan/Downloads/users.dat";
     private static final File file=new File("/home/daan/Downloads/users.dat");
-    private static boolean isFirstWrite;
+    //private static File file;
+
+    private static boolean isFirstWrite=true;
 
     public UserController(){
     }
 
     public static void writeUserToFile(User aUser) {
 
-        //File file=new File(path);
-        //boolean exists=file.exists();
         try {
             FileOutputStream fileOut = new FileOutputStream(file,true);
             ObjectOutputStream objOut = null;
@@ -46,39 +45,38 @@ public class UserController {
     }
 
 
-
+    /**
+     *
+     * @throws EOFException when user data file is empty and when there are no more users to be read.
+     * @return
+     */
     public static ArrayList<User> readUsersFromFile(){
 
         ArrayList<User> users =new ArrayList<>();
 
-        if(file.exists()){
-            try(FileInputStream fileIn=new FileInputStream(file);
-                ObjectInputStream objIn=new ObjectInputStream(fileIn)) {
-                while(true) {
-                    try{
+        if(file.isFile() && file.length()>0) {
+
+            try (FileInputStream fileIn = new FileInputStream(file);
+                 ObjectInputStream objIn = new ObjectInputStream(fileIn)) {
+                while (true) {
+                    try {
                         Object obj = objIn.readObject();
-                        users.add((User)obj);
-                    }
-                    catch(EOFException eof){
+                        users.add((User) obj);
+                    } catch (EOFException eof) {
                         break;
                     }
                 }
-            }
-            catch(EOFException e){
-                return null;
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-                Logger.getGlobal().info("A FileNotFoundException occurred!");
-                //return null; // Temporary solution for case when first user is created and file does not exist.
-
             }
         }
-        else{
+        else if(!file.isFile())
+            {
+            Logger.getGlobal().info("Files does not exist!");
             try{
 
                 Logger.getGlobal().info("Created new file");
-                file.createNewFile();
+                boolean isCreated=file.createNewFile();
                 isFirstWrite=true;
             }
             catch(IOException e){
@@ -112,7 +110,7 @@ public class UserController {
 
         ArrayList<User> users= readUsersFromFile();
         User user=null;
-        if(users!=null){
+        if(users.size()>0){
             for(User aUser : users){
                 if(aUser.getUsername().equals(aUsername)){
                     user=aUser;
@@ -127,6 +125,10 @@ public class UserController {
     public static int getNumberOfRegisteredUsers(){
         ArrayList<User> users=readUsersFromFile();
         return users.size();
+    }
+
+    public boolean isFirstWrite(){
+        return isFirstWrite;
     }
 
     public static String getUsername(User aUser){
