@@ -1,6 +1,5 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class UserController {
@@ -8,7 +7,12 @@ public class UserController {
     private static final File file=new File("/home/daan/Downloads/users.dat");
     //private static File file;
 
-    private static boolean isFirstWrite=true;
+    //private static boolean isFirstWrite=true;
+    private static boolean isFirstWrite;    // A file is supposed to have only one serialization stream header that is written
+                                            // the first time an object is written to the file. When I want to update a User object,
+                                            // I first read all User object from the file. I then write all User object back to the file
+                                            // minus the one that was updated. It is a this point I need to make sure that when the
+                                            // first User object is written a new serialization stream header is also written.
 
     public UserController(){
     }
@@ -22,17 +26,17 @@ public class UserController {
             try{
                 if(isFirstWrite==false){
 
-                    Logger.getGlobal().info("AppendingObjectOutputStream");
+                    //Logger.getGlobal().info("AppendingObjectOutputStream");
                     objOut= new AppendingObjectOutputStream(fileOut);
                 }
                 else if(isFirstWrite==true){
-                    Logger.getGlobal().info("ObjectOutputStream");
+                    //Logger.getGlobal().info("ObjectOutputStream");
                     objOut = new ObjectOutputStream(fileOut);
                     isFirstWrite=false;
                 }
 
                 objOut.writeObject(aUser);
-                Logger.getGlobal().info("A user was added");
+                //Logger.getGlobal().info("A user was added");
             }
             finally{
                 objOut.close();
@@ -50,10 +54,10 @@ public class UserController {
      * @throws EOFException when user data file is empty and when there are no more users to be read.
      * @return
      */
-    public static ArrayList<User> readUsersFromFile(){
+    public static Set<User> readUsersFromFile(){
 
-        ArrayList<User> users =new ArrayList<>();
-
+        //ArrayList<User> users =new ArrayList<>();
+        Set<User> users=new HashSet<>();
         if(file.isFile() && file.length()>0) {
 
             try (FileInputStream fileIn = new FileInputStream(file);
@@ -62,6 +66,7 @@ public class UserController {
                     try {
                         Object obj = objIn.readObject();
                         users.add((User) obj);
+                        //Logger.getGlobal().info("Read User object from file");
                     } catch (EOFException eof) {
                         break;
                     }
@@ -72,10 +77,10 @@ public class UserController {
         }
         else if(!file.isFile())
             {
-            Logger.getGlobal().info("Files does not exist!");
+            //Logger.getGlobal().info("File does not exist!");
             try{
 
-                Logger.getGlobal().info("Created new file");
+                //Logger.getGlobal().info("Created new file");
                 boolean isCreated=file.createNewFile();
                 isFirstWrite=true;
             }
@@ -88,19 +93,25 @@ public class UserController {
 
     public static void removeUserFromFile(User aUser){
         // Store all current User objects in a list.
-        ArrayList<User> currentUsers= readUsersFromFile();
+        Set<User> currentUsers= readUsersFromFile();
 
         // Delete file containing all the User objects.
         //File file=new File(path);
         file.delete();
 
         // Write all User objects to file except the one to be removed.
-        for(int i=0;i<currentUsers.size();i++){
+        /*for(int i=0;i<currentUsers.size();i++){
             if(i==0){
                 isFirstWrite=true;
             }
             if(!currentUsers.get(i).getUsername().equals(aUser.getUsername())){
                 writeUserToFile(currentUsers.get(i));
+            }
+        }*/
+        isFirstWrite=true;
+        for(User user : currentUsers){
+            if(!user.getUsername().equals(aUser.getUsername())){
+                writeUserToFile(user);
             }
         }
 
@@ -108,7 +119,7 @@ public class UserController {
 
     public static User getUser(String aUsername){
 
-        ArrayList<User> users= readUsersFromFile();
+        Set<User> users= readUsersFromFile();
         User user=null;
         if(users.size()>0){
             for(User aUser : users){
@@ -119,12 +130,7 @@ public class UserController {
             }
             return user;
         }
-        return null;
-    }
-
-    public static int getNumberOfRegisteredUsers(){
-        ArrayList<User> users=readUsersFromFile();
-        return users.size();
+        return null; // Perhaps I should not return null, but throw an exception instead?
     }
 
     public boolean isFirstWrite(){
