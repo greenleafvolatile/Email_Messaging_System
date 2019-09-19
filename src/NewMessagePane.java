@@ -67,17 +67,22 @@ public class NewMessagePane {
         sendButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
-                if(UserController.getUser(toField.getText())!=null){
-                    User recipient=UserController.getUser(toField.getText());
 
-                    // Do something if user does not exist.
+                User recipient=UserController.getUser(toField.getText());
+                Logger.getGlobal().info("messages size before: " + recipient.getNrOfMessages());
+                if(recipient!=null){
+
                     Message message=new Message(UserController.getUsername(user), toField.getText(), subjectField.getText(), messageArea.getText());
+                    // Add new message to User object.
                     UserController.addMessage(recipient, message);
+                    // Delete old User object from file.
                     UserController.removeUserFromFile(recipient);
+                    // Write updated User object to file.
                     UserController.writeUserToFile(recipient); // writes updated User object to file.
-                    JOptionPane.getRootFrame().setVisible(false);
-                    //JOptionPane.getRootFrame().dispose();
-                    Logger.getGlobal().info("Sent!");
+                    //JOptionPane.getRootFrame().setVisible(false);
+                    JOptionPane.getRootFrame().dispose();
+                    Logger.getGlobal().info("Messages size after sent: " + UserController.getMessages(recipient).size());
+                    //Logger.getGlobal().info("Sent!");
 
                 }
                 else{
@@ -87,6 +92,7 @@ public class NewMessagePane {
                     UserController.addMessage(user, message);
                     UserController.removeUserFromFile(user);
                     UserController.writeUserToFile(user);
+                    JOptionPane.getRootFrame().dispose();
                 }
             }
         });
