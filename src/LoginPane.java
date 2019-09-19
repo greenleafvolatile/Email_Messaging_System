@@ -80,15 +80,14 @@ class LoginPane{
     private JPanel createTextFieldsPanel(){
 
 
-        /**
-         * This class allows for clearing the text of the errorLabel when the user corrects either the username or the password.
+        /*
+          This class allows for clearing the text of the errorLabel when the user corrects either the username or the password.
          */
         class ClearErrorLabelListener implements DocumentListener{
 
-            public void insertUpdate(DocumentEvent documentEvent){
+            public void insertUpdate(DocumentEvent documentEvent) {
                 clearErrorLabel();
             }
-
             public void removeUpdate(DocumentEvent documentEvent) {
                 clearErrorLabel();
             }
@@ -165,10 +164,7 @@ class LoginPane{
         });
 
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(event -> {
-
-                System.exit(0);
-        });
+        cancelButton.addActionListener(event -> System.exit(0));
 
         return new JButton[]{loginButton, registerButton, cancelButton};
     }
