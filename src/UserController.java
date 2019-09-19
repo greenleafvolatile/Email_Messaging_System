@@ -2,41 +2,38 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * This is a utility class.
+ */
 public class UserController {
 
     private static final File file=new File("/home/daan/Downloads/users.dat");
-    //private static File file;
-
-    //private static boolean isFirstWrite=true;
     private static boolean isFirstWrite;    // A file is supposed to have only one serialization stream header that is written
                                             // the first time an object is written to the file. When I want to update a User object,
                                             // I first read all User object from the file. I then write all User object back to the file
                                             // minus the one that was updated. It is a this point I need to make sure that when the
                                             // first User object is written a new serialization stream header is also written.
 
-    public UserController(){
-    }
+    private UserController(){ // Constructor has private access because UserController is a static utility class that should not be instantiated.
+    }                         // If you specify no constructor a constructor a default constructor with a public access specifier will be create that
+                              // calls the constructor of the Object class.
 
     public static void writeUserToFile(User aUser) {
 
         try {
             FileOutputStream fileOut = new FileOutputStream(file,true);
             ObjectOutputStream objOut = null;
-            Logger.getGlobal().info("isFirstWrite: " + isFirstWrite);
             try{
                 if(isFirstWrite==false){
 
-                    //Logger.getGlobal().info("AppendingObjectOutputStream");
                     objOut= new AppendingObjectOutputStream(fileOut);
                 }
                 else if(isFirstWrite==true){
-                    //Logger.getGlobal().info("ObjectOutputStream");
                     objOut = new ObjectOutputStream(fileOut);
                     isFirstWrite=false;
                 }
 
                 objOut.writeObject(aUser);
-                //Logger.getGlobal().info("A user was added");
             }
             finally{
                 objOut.close();
@@ -56,7 +53,6 @@ public class UserController {
      */
     public static Set<User> readUsersFromFile(){
 
-        //ArrayList<User> users =new ArrayList<>();
         Set<User> users=new HashSet<>();
         if(file.isFile() && file.length()>0) {
 
@@ -66,7 +62,6 @@ public class UserController {
                     try {
                         Object obj = objIn.readObject();
                         users.add((User) obj);
-                        //Logger.getGlobal().info("Read User object from file");
                     } catch (EOFException eof) {
                         break;
                     }
@@ -77,10 +72,10 @@ public class UserController {
         }
         else if(!file.isFile())
             {
-            //Logger.getGlobal().info("File does not exist!");
+
+            Logger.getGlobal().info("File does not exist!");
             try{
 
-                //Logger.getGlobal().info("Created new file");
                 boolean isCreated=file.createNewFile();
                 isFirstWrite=true;
             }
@@ -96,18 +91,9 @@ public class UserController {
         Set<User> currentUsers= readUsersFromFile();
 
         // Delete file containing all the User objects.
-        //File file=new File(path);
         file.delete();
 
         // Write all User objects to file except the one to be removed.
-        /*for(int i=0;i<currentUsers.size();i++){
-            if(i==0){
-                isFirstWrite=true;
-            }
-            if(!currentUsers.get(i).getUsername().equals(aUser.getUsername())){
-                writeUserToFile(currentUsers.get(i));
-            }
-        }*/
         isFirstWrite=true;
         for(User user : currentUsers){
             if(!user.getUsername().equals(aUser.getUsername())){
@@ -133,10 +119,6 @@ public class UserController {
         return null; // Perhaps I should not return null, but throw an exception instead?
     }
 
-    public boolean isFirstWrite(){
-        return isFirstWrite;
-    }
-
     public static String getUsername(User aUser){
         return aUser.getUsername();
     }
@@ -152,5 +134,6 @@ public class UserController {
     public static List<Message> getMessages(User aUser){
         return aUser.getMessages();
     }
+
 
 }
