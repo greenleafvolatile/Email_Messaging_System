@@ -1,4 +1,3 @@
-import java.util.logging.Logger;
 
 public class PassWordVerifier {
 
@@ -7,7 +6,7 @@ public class PassWordVerifier {
         String password=new String(aPassword);
         boolean hasUpperCase=!password.equals(password.toLowerCase());
         boolean hasLowerCase=!password.equals(password.toUpperCase());
-        if(hasUpperCase && hasLowerCase && password.length()==4){
+        if(hasUpperCase && hasLowerCase && password.length()>=4 && password.length()<=8){
             return true;
         }
         return false;
