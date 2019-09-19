@@ -14,32 +14,30 @@ import java.util.logging.Logger;
 
 public class InboxFrame extends JFrame{
 
-    private List<Message> messages;
     private User thisUser;
     private JPanel mainPanel;
     private JTextArea messageTextArea;
-    private JList<Message> messageList;
-    private int messageListIndex;
+    private JList<Message> messageJList;
+    private int messageJListIndex;
     private DefaultListModel<Message> listModel;
 
     public InboxFrame(User aUser) {
         thisUser = aUser;
-        messages = UserController.getMessages(aUser);
-        Logger.getGlobal().info("Messages length: " + messages.size());
         setContentPane(createMainPanel());
         pack();
         int delay=1000;
-        ActionListener messageListener=new ActionListener(){
+        ActionListener messageListener=new ActionListener(){ // Listener checks if User object has been updated.
 
-            public void actionPerformed(ActionEvent event){
-                User user=UserController.getUser(thisUser.getUsername());
-                if(messages.size()<user.getMessages().size()){
-                    messages=user.getMessages();
+            public void actionPerformed(ActionEvent event) {
+                //
+                User user = UserController.getUser(thisUser.getUsername());
+                if (listModel.size() < user.getMessages().size()) { // If updated User object saved to file has more messages than this snapshot of user.
+                    thisUser=user; // thisUser variable now references updated User Object.
                     listModel = new DefaultListModel<>();
-                    for(Message message : messages){
+                    for (Message message : user.getMessages()) {
                         listModel.addElement(message);
                     }
-                    messageList.setModel(listModel);
+                    messageJList.setModel(listModel);
                 }
             }
         };
@@ -57,32 +55,31 @@ public class InboxFrame extends JFrame{
         return mainPanel;
     }
 
-    public JLabel createOwnerLabel(){
-        JLabel ownerLabel=new JLabel("Mailbox of: " + thisUser.getUsername(), SwingConstants.CENTER);
-        return ownerLabel;
+    private JLabel createOwnerLabel(){
+        return new JLabel("Mailbox of: " + thisUser.getUsername(), SwingConstants.CENTER);
     }
 
 
     private JScrollPane createMessageTextArea(){
-        messageTextArea=new JTextArea(20, 20);
+        final int ROWS=20, COLUMNS=20;
+        messageTextArea=new JTextArea(ROWS, COLUMNS);
         messageTextArea.setBorder(new EtchedBorder());
         messageTextArea.setLineWrap(true);
         messageTextArea.setWrapStyleWord(true);
-        if(messages.size()>0){
-            messageTextArea.append(messages.get(0).format());
+        if(thisUser.getMessages().size()>0){
+            messageTextArea.append(thisUser.getMessages().get(0).format());
         }
-        JScrollPane scrollPane=new JScrollPane(messageTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        return scrollPane;
+        return new JScrollPane(messageTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
     private JScrollPane createInboxArea(){
         listModel=new DefaultListModel<>();
-        for(Message message : messages){
+        for(Message message : thisUser.getMessages()){
             listModel.addElement(message);
         }
-        messageList=new JList<>(listModel);
-        messageList.setCellRenderer(new ListCellRenderer<Message>() {
+        messageJList=new JList<>(listModel);
+        messageJList.setCellRenderer(new ListCellRenderer<Message>() {
             JLabel label=new JLabel();
             @Override
             public Component getListCellRendererComponent(JList<? extends Message> jList, Message message, int index, boolean isSelected, boolean cellHasFocus) {
@@ -103,19 +100,20 @@ public class InboxFrame extends JFrame{
             }
         });
 
-        messageList.addMouseListener(new MouseAdapter(){
+        messageJList.addMouseListener(new MouseAdapter(){
             public void mouseClicked(MouseEvent e){
-                messageListIndex=messageList.getSelectedIndex();
-                Logger.getGlobal().info("Message list index: " + messageListIndex);
+                messageJListIndex=messageJList.getSelectedIndex();
+                Logger.getGlobal().info("Index: " + messageJListIndex);
+                Logger.getGlobal().info("User: " + thisUser.getUsername());
                if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount()==2){
-                    if(messageListIndex>=0){
-                        Message message=messageList.getModel().getElementAt(messageListIndex);
+                    if(messageJListIndex>=0){
+                        Message message=messageJList.getModel().getElementAt(messageJListIndex);
                         messageTextArea.setText(message.format());
                     }
                 }
             }
         });
-        JScrollPane inboxArea=new JScrollPane(messageList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane inboxArea=new JScrollPane(messageJList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         inboxArea.setViewportBorder(new EtchedBorder());
         inboxArea.setPreferredSize(new Dimension(200, 200));
         return inboxArea;
@@ -137,7 +135,6 @@ public class InboxFrame extends JFrame{
 
         JPanel controlPanel=new JPanel();
 
-
         controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
         controlPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -156,18 +153,22 @@ public class InboxFrame extends JFrame{
         deleteMessageButton.addActionListener(new ActionListener(){
 
             public void actionPerformed(ActionEvent event){
-                if(messageList.getModel().getSize()>0 && messageListIndex<listModel.size()){
+                if(messageJList.getModel().getSize()>0 && messageJListIndex<listModel.size() && messageJListIndex!=-1){ //JList getSelectedIndex() returns -1 if there is no selection.
                     Logger.getGlobal().info("Check!");
 
 
-                    messages.remove(messageListIndex);
-                    listModel.remove(messageListIndex);
+
+
+                    Logger.getGlobal().info("User before messages: " + thisUser.getNrOfMessages());
+                    UserController.deleteMessage(thisUser, messageJListIndex);
+                    //thisUser.removeMessage(messageJListIndex);
+
+                    Logger.getGlobal().info("User after messages: " + thisUser.getNrOfMessages());
                     UserController.removeUserFromFile(thisUser);
                     UserController.writeUserToFile(thisUser);
+                    listModel.remove(messageJListIndex);
 
 
-                    Logger.getGlobal().info("List size: " + messageList.getModel().getSize());
-                    Logger.getGlobal().info("Messages length: " + messages.size());
                 }
 
             }
