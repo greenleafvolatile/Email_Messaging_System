@@ -1,15 +1,13 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.Flow;
-import java.util.logging.Logger;
 
-public class ErrorLabel extends JLabel {
+class ErrorLabel extends JLabel {
 
-
-    public ErrorLabel(int nrOfLines) {
-        setFont(new Font(this.getFont().getName(), Font.PLAIN, 10));
+    ErrorLabel(int nrOfLines) {
+        final int FONT_SIZE=10;
+        setFont(new Font(this.getFont().getName(), Font.PLAIN, FONT_SIZE));
         setForeground(Color.RED);
-        setPreferredSize(new Dimension(Integer.MIN_VALUE, this.getFont().getSize() * nrOfLines)); // I'd rather not use this.
+        setPreferredSize(new Dimension(Integer.MIN_VALUE, this.getFont().getSize() * nrOfLines));
         setHorizontalAlignment(SwingConstants.CENTER);
         setText("");
     }
