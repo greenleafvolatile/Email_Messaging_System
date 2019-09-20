@@ -1,14 +1,28 @@
 import java.util.*;
 import java.io.Serializable;
-import java.util.logging.Logger;
 
+/**
+ * This class models a user.
+ */
 public class User implements Serializable {
 
-    private String firstName, lastName, username;
-    private char[] password;
-    private List<Message> messages;
+    private final String firstName;
+    private final String lastName;
+    private final String username;
+    private final char[] password;
+    private final List<Message> messages;
 
-    public User(String firstName, String lastName, String aUsername, char[] aPassword){
+    /**
+     * Constructor
+     * @param aFirstName, the user's first name.
+     * @param aLastName, the user's last name.
+     * @param aUsername, a username. Must be unique.
+     * @param aPassword, a password.
+     */
+
+    public User(String aFirstName, String aLastName, String aUsername, char[] aPassword){
+        firstName=aFirstName;
+        lastName=aLastName;
         messages=new ArrayList<>();
         username=aUsername;
         password=aPassword;
@@ -32,7 +46,7 @@ public class User implements Serializable {
     }
 
     public String toString(){
-        return new StringBuffer("Username: ").append(username).append(" Password: ").append(password).toString();
+        return "First name: " + firstName + " Last name: " + lastName + " Username: " + username + " Password: " + String.valueOf(password);
     }
 
     public int getNrOfMessages(){
@@ -68,7 +82,5 @@ public class User implements Serializable {
         User comparate=(User) o;
 
         return this.firstName.compareTo(comparate.firstName)==0 && this.lastName.compareTo(comparate.lastName)==0 && this.username.compareTo(comparate.username)==0 && Arrays.equals(this.password, comparate.password) && this.messages.size()==comparate.messages.size();
-
-
     }
 }
