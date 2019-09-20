@@ -7,6 +7,13 @@ public class Message implements Serializable {
     private String text;
     private String subject;
 
+    /**
+     * Constructor
+     * @param sender the sender of the message.
+     * @param recipient the intended recipient of the message.
+     * @param subject the subject of the message.
+     * @param text the actual message text (body of the message).
+     */
     public Message(String sender, String recipient, String subject, String text){
         this.sender=sender;
         this.recipient=recipient;
@@ -14,11 +21,8 @@ public class Message implements Serializable {
         this.subject=subject;
     }
 
-    // This toString method does not display all the data in this object. This is because I want only the sender and the subject displayed in a JList.
-    // JList calls toString. I realize this is not the proper use of the toString method. Creating a JList with custom behavior using ListCellRenderer is beyond
-    // the scope of this project.
     public String toString(){
-        return new StringBuffer("Sender: ").append(sender).append(" title: ").append(subject).toString();
+        return "Sender: " + sender + " Recipient: " + recipient + " Text: " + text + " title: " + subject;
     }
 
     public String getSender(){
@@ -29,6 +33,10 @@ public class Message implements Serializable {
         return subject;
     }
 
+    /**
+     * This methods formats a Message object in such a way that it is optimally displayed in the messageTextArea of the InboxFrame class.
+     * @return a string.
+     */
     public String format(){
         return new StringBuffer("Sender: ").append(sender+"\n").append("Title: ").append(subject+"\n").append(text).toString();
     }
