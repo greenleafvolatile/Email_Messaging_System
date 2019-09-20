@@ -1,17 +1,28 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * This class provides a GUI for the user to send a new message with.
+ */
 class NewMessagePane {
 
     private final User user;
     private JTextArea messageArea;
     private JTextField toField, subjectField;
 
+    /**
+     * Constructor
+     * @param thisUser a User object. The user that logged in.
+     */
     public NewMessagePane(User thisUser){
         this.user=thisUser;
         JOptionPane.showOptionDialog(null, createMainPanel(), "New Message", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,  createButtonsArray(), createButtonsArray()[0]);
     }
 
+    /**
+     * This method creates the main panel displayed on the JOptionPane.
+     * @return a JPanel object.
+     */
     private JPanel createMainPanel(){
         JPanel mainPanel=new JPanel(new BorderLayout(10, 10));
         mainPanel.add(createLabelsPanel(), BorderLayout.WEST);
@@ -21,6 +32,10 @@ class NewMessagePane {
     }
 
 
+    /**
+     * This method creates a JPanel with JLabels as part of the main panel.
+     * @return a JPanel object.
+     */
     private JPanel createLabelsPanel(){
         JPanel labelsPanel=new JPanel(new GridLayout(0, 1, 10, 10));
 
@@ -32,6 +47,10 @@ class NewMessagePane {
         return labelsPanel;
     }
 
+    /**
+     * this methods creates JTextField objects as part of the main panel.
+     * @return a JPanel object.
+     */
     private JPanel createTextFieldsPanel(){
         JPanel textFieldsPanel=new JPanel(new GridLayout(0, 1, 10, 10));
 
@@ -43,6 +62,10 @@ class NewMessagePane {
         return textFieldsPanel;
     }
 
+    /**
+     * This methods creates a JTextArea object for the message text as part of the main panel.
+     * @return a JScrollPane object.
+     */
     private JScrollPane createMessageArea(){
         messageArea=new JTextArea(15, 25);
         messageArea.setLineWrap(true);
@@ -51,6 +74,10 @@ class NewMessagePane {
         return new JScrollPane(messageArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
+    /**
+     * This methods creates a 'send' button and a 'cancel' button to replace the default buttons of the JOptionPane.
+     * @return a array of (2) JButton objects.
+     */
     private JButton[] createButtonsArray(){
 
         JButton sendButton=new JButton("Send");
