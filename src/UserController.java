@@ -14,21 +14,28 @@ public class UserController {
                                             // minus the one that was updated. It is a this point I need to make sure that when the
                                             // first User object is written a new serialization stream header is also written.
 
+    /**
+     * Constructor
+     */
     private UserController(){ // Constructor has private access because UserController is a static utility class that should not be instantiated.
     }                         // If you specify no constructor a constructor a default constructor with a public access specifier will be create that
                               // calls the constructor of the Object class.
 
+    /**
+     * This method writes a User object to file.
+     * @param aUser, a User object.
+     */
     public static void writeUserToFile(User aUser) {
 
         try {
             FileOutputStream fileOut = new FileOutputStream(file,true);
             ObjectOutputStream objOut = null;
             try{
-                if(isFirstWrite==false){
+                if(!isFirstWrite){
 
                     objOut= new AppendingObjectOutputStream(fileOut);
                 }
-                else if(isFirstWrite==true){
+                else{
                     objOut = new ObjectOutputStream(fileOut);
                     isFirstWrite=false;
                 }
@@ -47,11 +54,12 @@ public class UserController {
 
 
     /**
-     *
-     * @throws EOFException when user data file is empty and when there are no more users to be read.
-     * @return
+     * This method reads a User object from file.
+     * @return a HashSet with User objects. I chose a HashSet because 1) I dont need to access elements in this collection by position,
+     * 2) order of the elements does not matter 3) Finding elements must be as fast as possible.
      */
-    public static Set<User> readUsersFromFile(){
+
+    private static Set<User> readUsersFromFile(){
 
         Set<User> users=new HashSet<>();
         if(file.isFile() && file.length()>0) {
@@ -86,12 +94,16 @@ public class UserController {
         return users;
     }
 
+    /**
+     * This method removes a User object from a file (done as part of process that updates a User object).
+     * @param aUser a User object.
+     */
     public static void removeUserFromFile(User aUser){
         // Store all current User objects in a list.
         Set<User> currentUsers= readUsersFromFile();
 
         // Delete file containing all the User objects.
-        file.delete();
+        boolean isDeleted=file.delete();
 
         // Write all User objects to file except the one to be removed.
         isFirstWrite=true;
@@ -130,10 +142,4 @@ public class UserController {
     public static void deleteMessage(User aUser, int index){
         aUser.getMessages().remove(index);
     }
-
-    public static List<Message> getMessages(User aUser){
-        return aUser.getMessages();
-    }
-
-
 }
