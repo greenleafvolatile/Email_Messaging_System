@@ -15,6 +15,9 @@ class LoginPane{
     private JLabel errorLabel;
     private JPasswordField passwordField;
 
+    /**
+     * Constructor.
+     */
     public LoginPane(){
         JOptionPane.showOptionDialog(null, createMainPanel(), "Login", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, createButtonsArray(), createButtonsArray()[0]);
     }
