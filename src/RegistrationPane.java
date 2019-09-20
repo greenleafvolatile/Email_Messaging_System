@@ -5,19 +5,29 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Arrays;
 
+/**
+ * This class provides a GUI for users to create a new account.
+ */
 class RegistrationPane {
 
     private JTextField firstNameField, lastNameField, usernameField;
     private JPasswordField passwordField, retypePasswordField;
-
     private JLabel errorLabel;
     private boolean isValidPassword, isVerifiedPassword, isValidUsername;
 
 
+    /**
+     * Constructor
+     */
     public RegistrationPane() {
         JOptionPane.showOptionDialog(null, createMainPanel(), "Registration", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, createButtons(), createButtons()[0]);
     }
 
+
+    /**
+     * This method creates the main panel displayed on the JOptionPane.
+     * @return a JPanel object.
+     */
     private JPanel createMainPanel(){
 
         JPanel mainPanel=new JPanel(new BorderLayout(10, 10));
@@ -32,6 +42,11 @@ class RegistrationPane {
         return mainPanel;
     }
 
+
+    /**
+     * This method creates a JPanel with JLabels as part of the main panel.
+     * @return a JPanel object.
+     */
     private JPanel createLabelsPanel(){
 
         JPanel labelsPanel=new JPanel(new GridLayout(0, 1, 10, 10));
@@ -51,6 +66,10 @@ class RegistrationPane {
         return labelsPanel;
     }
 
+    /**
+     * this methods creates JTextField objects as part of the main panel.
+     * @return a JPanel object.
+     */
     private JPanel createTextFieldsPanel(){
 
         final int NR_OF_COLUMNS=10;
@@ -61,6 +80,7 @@ class RegistrationPane {
         lastNameField=new JTextField(NR_OF_COLUMNS);
 
         usernameField=new JTextField(NR_OF_COLUMNS);
+        // Add a DocumentListener that informs the user that the  username that was typed is already bound to an account.
         usernameField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent documentEvent) {
@@ -93,18 +113,20 @@ class RegistrationPane {
         });
 
         passwordField=new JPasswordField(NR_OF_COLUMNS);
+        // Add a FocusListener that informs the user when an invalid password has been chosen.
         passwordField.addFocusListener(new FocusAdapter(){
 
             public void focusLost(FocusEvent e){
                 super.focusLost(e);
                 if(isValidUsername && passwordField.getPassword().length>1 & ! PassWordVerifier.isCorrectPassword(passwordField.getPassword())){
-                    errorLabel.setText("<html>Password must be between 4 and 8 characters. <br /> Must contain 1 uppercase and 1 lowercase character.</html>");
+                    errorLabel.setText("<html>Password must be between 2 and 4 characters. <br /> Must contain 1 uppercase and 1 lowercase character.</html>");
                 }
                 else {
                     isVerifiedPassword=true;
                 }
             }
         });
+        // Add a Document Listener that clears the error label's text when a user goes back to correct an invalid password.
         passwordField.getDocument().addDocumentListener(new DocumentListener(){
 
             public void insertUpdate(DocumentEvent d){
@@ -126,6 +148,7 @@ class RegistrationPane {
 
 
         retypePasswordField=new JPasswordField(NR_OF_COLUMNS);
+        // Add a DocumentListener that 'listens' it the password in the retypePasswordField matches that in the passwordField.
         retypePasswordField.getDocument().addDocumentListener(new DocumentListener(){
 
             @Override
@@ -171,6 +194,10 @@ class RegistrationPane {
         return textFieldsPanel;
     }
 
+    /**
+     * This methods creates a 'create account' button and a 'cancel' button to replace the default buttons of the JOptionPane.
+     * @return a array of (2) JButton objects.
+     */
     private JButton[] createButtons(){
 
         JButton createAccountButton=new JButton("Create account");
@@ -180,7 +207,7 @@ class RegistrationPane {
                 errorLabel.setText("* required fields!");
                 errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
             }
-            // Check if all fields have been properly filled
+            // Check if all fields have been properly filled and create new User object
             else if(isValidPassword && isVerifiedPassword && isValidUsername){
 
                     String aUsername = usernameField.getText();
