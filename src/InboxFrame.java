@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * This class provides an inbox GUI for the messaging system.
+ */
 public class InboxFrame extends JFrame{
 
     private User thisUser;
@@ -13,6 +16,10 @@ public class InboxFrame extends JFrame{
     private int messageJListIndex;
     private DefaultListModel<Message> listModel;
 
+    /**
+     * Constructor.
+     * @param aUser, a User object. The user that logged in.
+     */
     public InboxFrame(User aUser) {
         thisUser = aUser;
         setContentPane(createMainPanel());
@@ -34,6 +41,10 @@ public class InboxFrame extends JFrame{
         inboxRefresher.start();
     }
 
+    /**
+     * This method creates the main panel (content pane) for the inbox frame.
+     * @return a JPanel object.
+     */
     private JPanel createMainPanel(){
         JPanel mainPanel=new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -44,10 +55,18 @@ public class InboxFrame extends JFrame{
         return mainPanel;
     }
 
+    /**
+     * This methods creates a label displayed at the top of the inbox frame.
+     * @return a JLabel object.
+     */
     private JLabel createOwnerLabel(){
         return new JLabel("Mailbox of: " + thisUser.getUsername(), SwingConstants.CENTER);
     }
 
+    /**
+     * This method creates an area that displays the full contents of a message
+     * @return a JScrollPane object.
+     */
     private JScrollPane createMessageTextArea(){
         final int ROWS=20, COLUMNS=20;
         messageTextArea=new JTextArea(ROWS, COLUMNS);
@@ -61,6 +80,10 @@ public class InboxFrame extends JFrame{
         return new JScrollPane(messageTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     }
 
+    /**
+     * This method create an area the displays a user's received messages (that have not been deleted).
+     * @return a JScrollPane object.
+     */
     private JScrollPane createInboxArea(){
         listModel=new DefaultListModel<>();
         for(Message message : thisUser.getMessages()){
@@ -104,6 +127,10 @@ public class InboxFrame extends JFrame{
         return inboxArea;
     }
 
+    /**
+     * This method creates a JPanel with buttons to create a new message, delete a message, and logout.
+     * @return a JPanel object.
+     */
     private JPanel createControlPanel(){
 
         class CustomButton extends JButton{
