@@ -137,7 +137,9 @@ public class InboxFrame extends JFrame{
 
             private CustomButton(String text){
                 super(text);
-                Dimension size = new Dimension(125, 25);
+                final int WIDTH=125;
+                final int HEIGHT=25;
+                Dimension size = new Dimension(WIDTH, HEIGHT);
                 setPreferredSize(size);
                 setMinimumSize(size);
                 setMaximumSize(size);
