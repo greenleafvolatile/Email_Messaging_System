@@ -49,14 +49,6 @@ public class User implements Serializable {
         return "First name: " + firstName + " Last name: " + lastName + " Username: " + username + " Password: " + String.valueOf(password);
     }
 
-    public int getNrOfMessages(){
-        return messages.size();
-    }
-
-    public void removeMessage(int index){
-        messages.remove(index);
-    }
-
     @Override
     public int hashCode(){
         final int HASH_MULTIPLIER=31;
