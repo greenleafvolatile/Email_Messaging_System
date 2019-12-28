@@ -128,25 +128,6 @@ class LoginPane{
 
         // Add a documentListener to clear the errorLabel's text when a user corrects the password.
         passwordField.getDocument().addDocumentListener(new ClearErrorLabelListener());
-       /* passwordField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent documentEvent){
-                clearErrorLabel();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent documentEvent) {
-                clearErrorLabel();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent documentEvent) {
-            }
-
-            void clearErrorLabel(){
-                    errorLabel.setText("");
-                }
-        });*/
 
         textFieldsPanel.add(usernameField);
         textFieldsPanel.add(passwordField);
