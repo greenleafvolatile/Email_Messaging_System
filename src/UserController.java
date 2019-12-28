@@ -81,7 +81,6 @@ public class UserController {
         else if(!file.isFile())
             {
 
-            Logger.getGlobal().info("File does not exist!");
             try{
 
                 boolean isCreated=file.createNewFile();
