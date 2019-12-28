@@ -230,6 +230,4 @@ class RegistrationPane {
 
         return new JButton[]{createAccountButton, cancelButton};
     }
-
-
 }
