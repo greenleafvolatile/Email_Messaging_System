@@ -97,7 +97,7 @@ class NewMessagePane {
                 JOptionPane.getRootFrame().dispose();
             }
             else{
-                // send generic message could not be delivered message.
+                // send generic message-could-not-be-delivered message.
                 Message message = new Message(UserController.getUsername(user), UserController.getUsername(user), subjectField.getText(), "A message that you sent could not be delivered to one or more of its recipients: \n" + toField.getText() + "\n" + messageArea.getText());
                 UserController.addMessage(user, message);
                 UserController.removeUserFromFile(user);
