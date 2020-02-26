@@ -113,7 +113,7 @@ class LoginPane{
         passwordField = new JPasswordField();
         passwordField.addActionListener(new LoginListener());
 
-        // Because the password must consist of 4 to 8 characters(and because I wanted to mess around with DocumentFilter which
+        // Because the password must consist of 2 to 4 characters(and because I wanted to mess around with DocumentFilter which
         // was new to me), I added a DocumentFilter to limit the number of characters in the passwordField to 8.
         AbstractDocument document=(AbstractDocument) passwordField.getDocument();
         document.setDocumentFilter(new DocumentFilter(){
@@ -121,7 +121,7 @@ class LoginPane{
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 String string=fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-                if(string.length()<=8){ super.replace(fb, offset, length, text, attrs);
+                if(string.length()<=4){ super.replace(fb, offset, length, text, attrs);
                 }
             }
         });

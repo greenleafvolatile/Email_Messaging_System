@@ -4,6 +4,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * This class provides a GUI for users to create a new account.
@@ -118,11 +119,15 @@ class RegistrationPane {
 
             public void focusLost(FocusEvent e){
                 super.focusLost(e);
-                if(isValidUsername && passwordField.getPassword().length>1 & ! PassWordVerifier.isCorrectPassword(passwordField.getPassword())){
+                // If password is not of valid format display message.
+                if(passwordField.getPassword().length>1 & !PassWordVerifier.isCorrectPassword(passwordField.getPassword())){
                     errorLabel.setText("<html>Password must be between 2 and 4 characters. <br /> Must contain 1 uppercase and 1 lowercase character.</html>");
                 }
                 else {
-                    isVerifiedPassword=true;
+                    if(retypePasswordField.getPassword().length!=0 && !Arrays.equals(passwordField.getPassword(), retypePasswordField.getPassword())) {
+                        errorLabel.setText("Passwords don't match");
+                    }
+                    isValidPassword=true;
                 }
             }
         });
@@ -140,15 +145,13 @@ class RegistrationPane {
             public void changedUpdate(DocumentEvent d){}
 
             private void clearErrorLabel() {
-                if (isValidUsername) {
-                    errorLabel.setText("");
-                }
+                errorLabel.setText("");
             }
         });
 
 
         retypePasswordField=new JPasswordField(NR_OF_COLUMNS);
-        // Add a DocumentListener that 'listens' it the password in the retypePasswordField matches that in the passwordField.
+        // Add a DocumentListener that checks if the password in the retypePasswordField matches that in the passwordField.
         retypePasswordField.getDocument().addDocumentListener(new DocumentListener(){
 
             @Override
@@ -167,15 +170,21 @@ class RegistrationPane {
 
             private void comparePasswords() {
 
-                if (isValidUsername && !Arrays.equals(passwordField.getPassword(), retypePasswordField.getPassword()) && isVerifiedPassword && passwordField.getPassword().length!=0 && retypePasswordField.getPassword().length==passwordField.getPassword().length) {
-                    errorLabel.setText("Passwords don't match");
-                }
-                else if(isValidUsername){
-                    isValidPassword=true;
-                    errorLabel.setText("");
+
+                // If the password is of a valid format then compare retype field password to password field password.
+                if(isValidPassword){
+                    if(!Arrays.equals(passwordField.getPassword(), retypePasswordField.getPassword())) {
+                        errorLabel.setText("Passwords don't match");
+                    }
+                    else{
+                        isVerifiedPassword=true;
+                        errorLabel.setText("");
+
+                    }
                 }
             }
         });
+
 
         class CustomPanel extends JPanel{
 
@@ -203,12 +212,14 @@ class RegistrationPane {
         JButton createAccountButton=new JButton("Create account");
         createAccountButton.addActionListener(event -> {
             // Check if required fields have been filled.
-            if ((usernameField.getText().equals("") || isValidUsername) && (passwordField.getPassword().length == 0 || retypePasswordField.getPassword().length == 0)) {
-                errorLabel.setText("* required fields!");
+            if ((usernameField.getText().equals("") || passwordField.getPassword().length == 0 || retypePasswordField.getPassword().length == 0)) {
+                errorLabel.setText("* Required fields!");
                 errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
             }
-            // Check if all fields have been properly filled and create new User object
-            else if(isValidPassword && isVerifiedPassword && isValidUsername){
+
+
+            // All required fields have been filled and password has a valid format and has been verified then create new User object.
+            else if(isVerifiedPassword && isValidUsername){
 
                     String aUsername = usernameField.getText();
                     String firstName = firstNameField.getText();
