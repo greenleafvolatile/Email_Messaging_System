@@ -120,7 +120,7 @@ class RegistrationPane {
             public void focusLost(FocusEvent e){
                 super.focusLost(e);
                 // If password is not of valid format display message.
-                if(passwordField.getPassword().length>1 & !PassWordVerifier.isCorrectPassword(passwordField.getPassword())){
+                if(passwordField.getPassword().length < 2 || passwordField.getPassword().length < 4 || !PassWordVerifier.isCorrectPassword(passwordField.getPassword())){
                     errorLabel.setText("<html>Password must be between 2 and 4 characters. <br /> Must contain 1 uppercase and 1 lowercase character.</html>");
                 }
                 else {
@@ -171,7 +171,7 @@ class RegistrationPane {
             private void comparePasswords() {
 
 
-                // If the password is of a valid format then compare retype field password to password field password.
+                // If the password is of a valid format then compare retype-password field content to password field content.
                 if(isValidPassword){
                     if(!Arrays.equals(passwordField.getPassword(), retypePasswordField.getPassword())) {
                         errorLabel.setText("Passwords don't match");
@@ -179,7 +179,6 @@ class RegistrationPane {
                     else{
                         isVerifiedPassword=true;
                         errorLabel.setText("");
-
                     }
                 }
             }
@@ -218,7 +217,7 @@ class RegistrationPane {
             }
 
 
-            // All required fields have been filled and password has a valid format and has been verified then create new User object.
+            // If all required fields have been filled AND password is valid AND has been verified THEN create new User object.
             else if(isVerifiedPassword && isValidUsername){
 
                     String aUsername = usernameField.getText();

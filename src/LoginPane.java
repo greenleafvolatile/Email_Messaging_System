@@ -103,8 +103,8 @@ class LoginPane{
             }
         }
 
+        final int passwordLength = 4;
         JPanel textFieldsPanel = new JPanel(new GridLayout(0, 1, 10, 10));
-
 
         usernameField = new JTextField();
         // add a ClearErrorLabelListener to clear the errorLabel's text when the user corrects the username.
@@ -114,14 +114,14 @@ class LoginPane{
         passwordField.addActionListener(new LoginListener());
 
         // Because the password must consist of 2 to 4 characters(and because I wanted to mess around with DocumentFilter which
-        // was new to me), I added a DocumentFilter to limit the number of characters in the passwordField to 8.
+        // was new to me), I added a DocumentFilter to limit the number of characters in the passwordField to 4.
         AbstractDocument document=(AbstractDocument) passwordField.getDocument();
         document.setDocumentFilter(new DocumentFilter(){
 
             @Override
             public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
                 String string=fb.getDocument().getText(0, fb.getDocument().getLength()) + text;
-                if(string.length()<=4){ super.replace(fb, offset, length, text, attrs);
+                if(string.length()<=passwordLength){ super.replace(fb, offset, length, text, attrs);
                 }
             }
         });

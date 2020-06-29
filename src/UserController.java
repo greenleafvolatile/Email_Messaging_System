@@ -55,8 +55,8 @@ public class UserController {
 
     /**
      * This method reads a User object from file.
-     * @return a HashSet with User objects. I chose a HashSet because 1) I dont need to access elements in this collection by position,
-     * 2) order of the elements does not matter 3) Finding elements must be as fast as possible.
+     * @return a HashSet with User objects. I chose a HashSet because 1) I don't need to access elements in this collection by position,
+     * 2) order of the elements does not matter, 3) Finding elements must be as fast as possible.
      */
 
     private static Set<User> readUsersFromFile(){
