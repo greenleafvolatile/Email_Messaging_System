@@ -10,8 +10,10 @@ import java.io.*;
  * Because I was writing multiple User object and creating a new ObjectOutputStream object each time, multiple headers would
  * be written which caused the StreamCorruptedException.
  *
- * AppendingObjectOutputStream, which extends ObjectOutputStream, is the solution. I found it here:
+ * AppendingObjectOutputStream, which extends ObjectOutputStream, is the solution.
+ * This is not my code. I found it here:
  * https://stackoverflow.com/questions/1194656/appending-to-an-objectoutputstream
+ * Props to Andreas Dolk!
  */
 
 public class AppendingObjectOutputStream extends ObjectOutputStream {
